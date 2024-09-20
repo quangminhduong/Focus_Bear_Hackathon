@@ -1,12 +1,12 @@
 # Focus_Bear_Hackathon
  
-##Prequesites:
+## Prequesites:
 
 ### Make sure you have Node installed
 ### Make sure you have JDK installed (JDK 17 preferred)
 ### Make sure you have an emulator configured from Android Studio (API 34 preferred)
 
-##Running Instruction:
+## Running Instruction:
 
 ### Navigate to `backend` and enter `npm run dev`
 ### Navigate to `frontend` and enter `npm start`
