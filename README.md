@@ -2,7 +2,7 @@
  
 ## Prequesites:
 
-Make sure you have Node installed \n
+Make sure you have Node installed <br>
 Make sure you have JDK installed (JDK 17 preferred)
 Make sure you have an emulator configured from Android Studio (API 34 preferred)
 
