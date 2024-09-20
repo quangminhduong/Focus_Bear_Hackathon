@@ -1,6 +1,6 @@
 # Focus_Bear_Hackathon
  
-## Prerequisite:
+## Prerequisites:
 
 -  Make sure you have Node installed
 -  Make sure you have JDK installed (JDK 17 preferred)
