@@ -12,7 +12,7 @@
 2. Navigate to `backend` and enter `npm run dev`
 3. Navigate to `frontend` and enter `npm start`
 4. Open your emulator, either from Android Studio or type `emulator -avd your_emualator_name` into the command line
-5. If the application has not loaded yet, hit `r` on the `frontend` CLI 
+5. If the application has not loaded yet, hit `a` on the `frontend` CLI 
 
 Enjoy 
 
