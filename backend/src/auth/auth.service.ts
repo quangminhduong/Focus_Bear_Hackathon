@@ -8,22 +8,21 @@ import { LoginResponse } from './interfaces/login-response.interface';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        @InjectRepository(User) private readonly userRepository: Repository<User>,
-        private readonly jwtService: JwtService,
-    ) {}
+  constructor(
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService,
+  ) {}
 
-    async loginUser(loginDto: LoginDto): Promise<LoginResponse> {
-        const user = await this.userRepository.findOneBy({ email: loginDto.email });
+  async loginUser(loginDto: LoginDto): Promise<LoginResponse> {
+    const user = await this.userRepository.findOneBy({ email: loginDto.email });
 
-        if (!user) {
-            throw new HttpException('User does not exist', HttpStatus.NOT_FOUND);
-        }
-
-        const payload = { id: user.id, email: user.email };
-        const accessToken = this.jwtService.sign(payload); 
-
-        return { accessToken };
+    if (!user) {
+      throw new HttpException('User does not exist', HttpStatus.NOT_FOUND);
     }
-}
 
+    const payload = { id: user.id, email: user.email };
+    const accessToken = this.jwtService.sign(payload);
+
+    return { accessToken };
+  }
+}

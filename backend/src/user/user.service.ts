@@ -33,23 +33,6 @@ export class UserService {
     const user = new User();
     user.email = createUserDto.email;
 
-    if (createUserDto.friends && createUserDto.friends.length > 0) {
-      const friends = await this.userRepository.findByIds(
-        createUserDto.friends,
-      );
-      user.friends = friends;
-    }
-
-    if (
-      createUserDto.friendRequests &&
-      createUserDto.friendRequests.length > 0
-    ) {
-      const friendRequests = await this.userRepository.findByIds(
-        createUserDto.friendRequests,
-      );
-      user.friendRequests = friendRequests;
-    }
-
     return this.userRepository.save(user);
   }
 
@@ -60,7 +43,10 @@ export class UserService {
   findAllUser(): Promise<User[]> {
     return this.userRepository.find();
   }
-
+  // Method to find a user by ID
+  findById(id: number): Promise<User | null> {
+    return this.userRepository.findOneBy({ id });
+  }
   /**
    * This function is used to get data of the user whose id is passed in the parameter.
    * @param id is type of number, which represents the user id.
@@ -83,25 +69,6 @@ export class UserService {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    user.email = updateUserDto.email || user.email;
-
-    if (updateUserDto.friends && updateUserDto.friends.length > 0) {
-      const friends = await this.userRepository.findByIds(
-        updateUserDto.friends,
-      );
-      user.friends = friends;
-    }
-
-    if (
-      updateUserDto.friendRequests &&
-      updateUserDto.friendRequests.length > 0
-    ) {
-      const friendRequests = await this.userRepository.findByIds(
-        updateUserDto.friendRequests,
-      );
-      user.friendRequests = friendRequests;
-    }
-
     return this.userRepository.save(user);
   }
 
@@ -112,5 +79,27 @@ export class UserService {
    */
   removeUser(id: number): Promise<{ affected?: number }> {
     return this.userRepository.delete(id);
+  }
+
+  // Method to send a friend request
+  async sendFriendRequest(currentUserId: number, targetUserId: number) {
+    const currentUser = await this.findById(currentUserId);
+    const targetUser = await this.findById(targetUserId);
+
+    if (!targetUser) {
+      throw new Error('Target user does not exist.');
+    }
+
+    if (!currentUser.friendRequests) {
+      currentUser.friendRequests = [];
+    }
+
+    // Add the target user's ID to the current user's friendRequests
+    currentUser.friendRequests.push(targetUserId);
+
+    // Save the updated user
+    await this.userRepository.save(currentUser);
+
+    return { message: 'Friend request sent successfully.' };
   }
 }

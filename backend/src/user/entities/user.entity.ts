@@ -27,7 +27,7 @@ export class User {
       referencedColumnName: 'id',
     },
   })
-  friends: User[];
+  friends: number[];
 
   @ManyToMany(() => User, (user) => user.friendRequests)
   @JoinTable({
@@ -41,5 +41,5 @@ export class User {
       referencedColumnName: 'id',
     },
   })
-  friendRequests: User[];
+  friendRequests: number[];
 }
