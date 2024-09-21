@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import axios from 'axios';
 
 const AuthenticationPage = ({ handlePageChange }) => {
-  const [name, setName] = useState('');
+  const [email, setName] = useState('');
   const [message, setMessage] = useState('');
   const [messageColor, setMessageColor] = useState('#EA902B');
   const [inputBorderColor, setInputBorderColor] = useState('#EA902B');
@@ -11,7 +12,8 @@ const AuthenticationPage = ({ handlePageChange }) => {
 
   const handleSubmit = async () => {
     try {
-      if (name == testUsername){
+      const response = await axios.post(`http://10.0.2.2:3000/user/${email}`);
+      if (response.data.success) {
         setMessage('Valid email address')
         setMessageColor('#EA902B')
         setInputBorderColor('#EA902B')
@@ -35,7 +37,7 @@ const AuthenticationPage = ({ handlePageChange }) => {
 
   const handleSignUp = async () => {
     try {
-      if (name != testUsername){ // add backend logic to check if email is already registered
+      if (email != testUsername){ // add backend logic to check if email is already registered
         setMessage('Valid email address')
         setMessageColor('#EA902B')
         setInputBorderColor('#EA902B')
@@ -60,7 +62,7 @@ const AuthenticationPage = ({ handlePageChange }) => {
         style={{ width : 300, height: 40, borderColor: inputBorderColor, borderWidth: 1, marginBottom: 20, color:'black' }}
         placeholder="Enter your email"
         onChangeText={(text) => setName(text)}
-        value={name}
+        value={email}
       />
       <Text style={[styles.message, {color: messageColor}]}>{message}</Text>
 
