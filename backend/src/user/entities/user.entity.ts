@@ -1,33 +1,45 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+/* eslint-disable prettier/prettier */
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 
 @Entity()
 export class User {
-    /**
-     * this decorator will help to auto generate id for the table.
-     */
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ type: 'varchar', length: 30 })
-    name: string;
+  @Column({ type: 'varchar', length: 40 })
+  email: string;
 
-    @Column({ type: 'varchar', length: 15 })
-    username: string;
+  @ManyToMany(() => User, (user) => user.friends)
+  @JoinTable({
+    name: 'user_friends', // Join table for friends
+    joinColumn: {
+      name: 'userId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'friendId',
+      referencedColumnName: 'id',
+    },
+  })
+  friends: User[];
 
-    @Column({ type: 'varchar', length: 40 })
-    email: string;
-
-    @Column({ type: 'int' })
-    age: number;
-
-    @Column({ type: 'varchar' })
-    password: string;
-
-    @Column({ type: 'enum', enum: ['m', 'f', 'u'] })
-    /**
-     * m - male
-     * f - female
-     * u - unspecified
-     */
-    gender: string;
+  @ManyToMany(() => User, (user) => user.friendRequests)
+  @JoinTable({
+    name: 'user_friend_requests', // Join table for friend requests
+    joinColumn: {
+      name: 'userId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'friendRequestId',
+      referencedColumnName: 'id',
+    },
+  })
+  friendRequests: User[];
 }

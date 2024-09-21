@@ -5,7 +5,7 @@
 -  Make sure you have Node installed
 -  Make sure you have JDK installed (JDK 17 preferred)
 -  Make sure you have an emulator configured from Android Studio (API 34 preferred)
--  Make sure you have a local PostgreSQL server ready (PostgreSQL 16 preferred) and create a database name `Focus_Bear_Hackathon_Database` 
+-  Make sure you have a local PostgreSQL server ready (PostgreSQL 16 preferred) 
 
 ## Running Instruction:
 

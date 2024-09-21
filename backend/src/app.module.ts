@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { User } from './user/entities/user.entity';
+import { AuthModule } from './auth/auth.module';
 
 
 @Module({
@@ -15,11 +16,12 @@ import { User } from './user/entities/user.entity';
       password: 'postgres',
       username: 'postgres',
       entities: [User],
-      database: 'Focus_Bear_Hackathon_Database',
+      database: 'postgres',
       synchronize: true,
       logging: true,
     }),
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

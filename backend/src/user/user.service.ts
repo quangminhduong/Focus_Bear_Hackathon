@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -7,33 +7,54 @@ import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
-  /**
-   * Here, we have used data mapper approch for this tutorial that is why we
-   * injecting repository here. Another approch can be Active records.
-   */
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-  ) { }
+  ) {}
 
   /**
-   * this is function is used to create User in User Entity.
-   * @param createUserDto this will type of createUserDto in which
-   * we have defined what are the keys we are expecting from body
+   * This function is used to create a User in the User Entity.
+   * @param createUserDto this is of type CreateUserDto
    * @returns promise of user
-   */
-  createUser(createUserDto: CreateUserDto): Promise<User> {
-    const user: User = new User();
-    user.name = createUserDto.name;
-    user.age = createUserDto.age;
+   *    */
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
+    // Check if a user with the given email already exists
+    const existingUser = await this.userRepository.findOneBy({
+      email: createUserDto.email,
+    });
+
+    if (existingUser) {
+      throw new HttpException(
+        'User with this email already exists',
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    // Create a new user if the email does not exist
+    const user = new User();
     user.email = createUserDto.email;
-    user.username = createUserDto.username;
-    user.password = createUserDto.password;
-    user.gender = createUserDto.gender;
+
+    if (createUserDto.friends && createUserDto.friends.length > 0) {
+      const friends = await this.userRepository.findByIds(
+        createUserDto.friends,
+      );
+      user.friends = friends;
+    }
+
+    if (
+      createUserDto.friendRequests &&
+      createUserDto.friendRequests.length > 0
+    ) {
+      const friendRequests = await this.userRepository.findByIds(
+        createUserDto.friendRequests,
+      );
+      user.friendRequests = friendRequests;
+    }
+
     return this.userRepository.save(user);
   }
 
   /**
-   * this function is used to get all the user's list
+   * This function is used to get all users.
    * @returns promise of array of users
    */
   findAllUser(): Promise<User[]> {
@@ -41,8 +62,8 @@ export class UserService {
   }
 
   /**
-   * this function used to get data of use whose id is passed in parameter
-   * @param id is type of number, which represent the id of user.
+   * This function is used to get data of the user whose id is passed in the parameter.
+   * @param id is type of number, which represents the user id.
    * @returns promise of user
    */
   viewUser(id: number): Promise<User> {
@@ -50,27 +71,44 @@ export class UserService {
   }
 
   /**
-   * this function is used to updated specific user whose id is passed in
-   * parameter along with passed updated data
-   * @param id is type of number, which represent the id of user.
-   * @param updateUserDto this is partial type of createUserDto.
-   * @returns promise of udpate user
+   * This function is used to update a specific user whose id is passed in the parameter along with updated data.
+   * @param id is type of number, which represents the user id.
+   * @param updateUserDto this is partial type of CreateUserDto.
+   * @returns promise of updated user
    */
-  updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const user: User = new User();
-    user.name = updateUserDto.name;
-    user.age = updateUserDto.age;
-    user.email = updateUserDto.email;
-    user.username = updateUserDto.username;
-    user.password = updateUserDto.password;
-    user.id = id;
+  async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id });
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    user.email = updateUserDto.email || user.email;
+
+    if (updateUserDto.friends && updateUserDto.friends.length > 0) {
+      const friends = await this.userRepository.findByIds(
+        updateUserDto.friends,
+      );
+      user.friends = friends;
+    }
+
+    if (
+      updateUserDto.friendRequests &&
+      updateUserDto.friendRequests.length > 0
+    ) {
+      const friendRequests = await this.userRepository.findByIds(
+        updateUserDto.friendRequests,
+      );
+      user.friendRequests = friendRequests;
+    }
+
     return this.userRepository.save(user);
   }
 
   /**
-   * this function is used to remove or delete user from database.
-   * @param id is the type of number, which represent id of user
-   * @returns nuber of rows deleted or affected
+   * This function is used to remove or delete a user from the database.
+   * @param id is the type of number, which represents the user id
+   * @returns number of rows deleted or affected
    */
   removeUser(id: number): Promise<{ affected?: number }> {
     return this.userRepository.delete(id);
